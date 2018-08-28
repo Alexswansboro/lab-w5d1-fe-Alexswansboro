@@ -1,17 +1,25 @@
-import request from 'superagent'
+import Api from './api'
+let api = new Api()
+
 
 class Note {
-  constructor (props) {
-    this.title = props.title
-    this.text = props.text
-    this.id = props.id
-    this.tags = props.tags || []
-    this.updated = null
+  constructor (properties) {
+    this.title = properties.title
+    this.text = properties.text
+    this.id = properties.id || properties._id
+    this.tags = properties.tags || []
+    this.updated = properties.updated || null
+  }
+
+  static getAll () {
+    return api.get().then(response => {
+      let notes = response.body.notes
+      return notes.map(noteData => new Note(noteData))
+    })
   }
 
   create () {
-    return request.post('https://notes-api.glitch.me/api/notes')
-      .auth('AlexCorey', 'Uncw1234')
+    return api.post()
       .send({
         title: this.title,
         text: this.text,
@@ -26,8 +34,7 @@ class Note {
 
   update () {
     if (!this.id) return
-    return request.put(`https://notes-api.glitch.me/api/notes/${this.id}`)
-      .auth('AlexCorey', 'Uncw1234')
+    return api.put(this.id)
       .send({
         title: this.title,
         text: this.text,
@@ -36,6 +43,14 @@ class Note {
       .then(response => {
         this.updated = response.body.updated
         return response.body
+      })
+  }
+
+  delete () {
+    if (!this.id) return
+    return api.delete(this.id)
+      .then(response => {
+        this.id = null
       })
   }
 }

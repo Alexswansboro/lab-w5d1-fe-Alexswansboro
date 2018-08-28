@@ -5,6 +5,10 @@ let note = new Note({
   text: 'Sample text'
 })
 
-note.create().then(noteBody => {
-  console.log(noteBody)
+// note.create().then(noteBody => {
+//   console.log(noteBody)
+// })
+
+Note.getAll().then(notes => {
+  // console.log(notes)
 })
